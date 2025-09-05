@@ -609,10 +609,16 @@
         const audioPlayer = document.getElementById('audioPlayer');
         const playPauseBtn = document.getElementById('playPauseBtn');
 
-        function togglePlayPause() {
+        // iOS Safari 호환성을 위해 async/await 구문으로 함수를 수정합니다.
+        async function togglePlayPause() {
             if (audioPlayer.paused) {
-                audioPlayer.play();
-                playPauseBtn.innerHTML = '❚❚';
+                try {
+                    await audioPlayer.play();
+                    playPauseBtn.innerHTML = '❚❚';
+                } catch (error) {
+                    console.error("오디오 재생에 실패했습니다:", error);
+                    // 사용자에게 재생 실패를 알리는 UI를 추가할 수도 있습니다.
+                }
             } else {
                 audioPlayer.pause();
                 playPauseBtn.innerHTML = '▶';
@@ -634,3 +640,4 @@
     </script>
 </body>
 </html>
+
