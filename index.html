@@ -180,17 +180,19 @@
         }
 
         #playPauseBtn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            width: auto;
+            height: 50px;
+            border-radius: 25px;
             border: none;
             background-color: var(--color-book1);
             color: white;
-            font-size: 24px;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 0 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: background-color 0.3s, transform 0.2s;
         }
@@ -602,32 +604,33 @@
 
     <div class="floating-controls">
         <audio id="audioPlayer" src="https://sen0991-my.sharepoint.com/:u:/g/personal/mathtox_munhyeon_hs_kr/EeQwU6NG25FKgYEXBviJ0KQBhhSIweEYg1jdVxOJl8_Mrg?download=1"></audio>
-        <button id="playPauseBtn">▶</button>
+        <button id="playPauseBtn">성경듣기</button>
     </div>
 
     <script>
         const audioPlayer = document.getElementById('audioPlayer');
         const playPauseBtn = document.getElementById('playPauseBtn');
 
-        // iOS Safari 호환성을 위해 async/await 구문으로 함수를 수정합니다.
-        async function togglePlayPause() {
+        const togglePlayPause = () => {
             if (audioPlayer.paused) {
-                try {
-                    await audioPlayer.play();
-                    playPauseBtn.innerHTML = '❚❚';
-                } catch (error) {
-                    console.error("오디오 재생에 실패했습니다:", error);
-                    // 사용자에게 재생 실패를 알리는 UI를 추가할 수도 있습니다.
+                const playPromise = audioPlayer.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        playPauseBtn.innerHTML = '일시정지';
+                    }).catch(error => {
+                        console.error("오디오 재생 실패:", error);
+                        playPauseBtn.innerHTML = '성경듣기'; // 오류 발생 시 버튼 텍스트 복원
+                    });
                 }
             } else {
                 audioPlayer.pause();
-                playPauseBtn.innerHTML = '▶';
+                playPauseBtn.innerHTML = '성경듣기';
             }
-        }
+        };
 
         playPauseBtn.addEventListener('click', togglePlayPause);
-
-        document.body.addEventListener('keydown', function(event) {
+        
+        document.body.addEventListener('keydown', (event) => {
             if (event.code === 'Space' && event.target === document.body) {
                 event.preventDefault();
                 togglePlayPause();
@@ -635,9 +638,13 @@
         });
 
         audioPlayer.addEventListener('ended', () => {
-            playPauseBtn.innerHTML = '▶';
+            playPauseBtn.innerHTML = '성경듣기';
         });
+
+        // iOS에서 오디오를 미리 로드하기 위한 트릭
+        window.addEventListener('load', () => {
+            audioPlayer.load();
+        }, false);
     </script>
 </body>
 </html>
-
