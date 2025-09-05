@@ -180,19 +180,17 @@
         }
 
         #playPauseBtn {
-            width: auto;
-            height: 50px;
-            border-radius: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
             border: none;
             background-color: var(--color-book1);
             color: white;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 24px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: background-color 0.3s, transform 0.2s;
         }
@@ -202,18 +200,6 @@
         }
         #playPauseBtn:active {
             transform: scale(0.95);
-        }
-        #playPauseBtn:disabled {
-            background-color: #a0aec0;
-            cursor: not-allowed;
-        }
-
-        #player-container {
-            position: absolute;
-            top: -9999px;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
         }
     </style>
 </head>
@@ -615,68 +601,36 @@
     </div>
 
     <div class="floating-controls">
-        <button id="playPauseBtn" disabled>로딩 중...</button>
+        <audio id="audioPlayer" src="https://sen0991-my.sharepoint.com/:u:/g/personal/mathtox_munhyeon_hs_kr/EeQwU6NG25FKgYEXBviJ0KQBhhSIweEYg1jdVxOJl8_Mrg?download=1"></audio>
+        <button id="playPauseBtn">▶</button>
     </div>
-    <div id="player-container"></div>
 
     <script>
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        var player;
+        const audioPlayer = document.getElementById('audioPlayer');
         const playPauseBtn = document.getElementById('playPauseBtn');
-        const videoId = '8sFeu6qa_JU';
-
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player-container', {
-                height: '0',
-                width: '0',
-                videoId: videoId,
-                playerVars: {
-                    'playsinline': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            playPauseBtn.disabled = false;
-            playPauseBtn.textContent = '성경듣기';
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
-                playPauseBtn.textContent = '일시정지';
-            } else {
-                playPauseBtn.textContent = '성경듣기';
-            }
-        }
 
         function togglePlayPause() {
-            if (player && typeof player.getPlayerState === 'function') {
-                const playerState = player.getPlayerState();
-                if (playerState == YT.PlayerState.PLAYING) {
-                    player.pauseVideo();
-                } else {
-                    player.playVideo();
-                }
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playPauseBtn.innerHTML = '❚❚';
+            } else {
+                audioPlayer.pause();
+                playPauseBtn.innerHTML = '▶';
             }
         }
 
         playPauseBtn.addEventListener('click', togglePlayPause);
-        
-        document.body.addEventListener('keydown', (event) => {
-            if (event.code === 'Space' && event.target === document.body && !playPauseBtn.disabled) {
+
+        document.body.addEventListener('keydown', function(event) {
+            if (event.code === 'Space' && event.target === document.body) {
                 event.preventDefault();
                 togglePlayPause();
             }
         });
+
+        audioPlayer.addEventListener('ended', () => {
+            playPauseBtn.innerHTML = '▶';
+        });
     </script>
 </body>
 </html>
-
