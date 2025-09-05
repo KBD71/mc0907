@@ -603,7 +603,7 @@
     </div>
 
     <div class="floating-controls">
-        <audio id="audioPlayer" src="https://sen0991-my.sharepoint.com/:u:/g/personal/mathtox_munhyeon_hs_kr/EeQwU6NG25FKgYEXBviJ0KQBhhSIweEYg1jdVxOJl8_Mrg?download=1"></audio>
+        <audio id="audioPlayer" src="https://sen0991-my.sharepoint.com/:u:/g/personal/mathtox_munhyeon_hs_kr/EeQwU6NG25FKgYEXBviJ0KQBhhSIweEYg1jdVxOJl_Mrg?download=1" playsinline></audio>
         <button id="playPauseBtn">성경듣기</button>
     </div>
 
@@ -613,20 +613,23 @@
 
         const togglePlayPause = () => {
             if (audioPlayer.paused) {
-                const playPromise = audioPlayer.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        playPauseBtn.innerHTML = '일시정지';
-                    }).catch(error => {
-                        console.error("오디오 재생 실패:", error);
-                        playPauseBtn.innerHTML = '성경듣기'; // 오류 발생 시 버튼 텍스트 복원
-                    });
-                }
+                audioPlayer.play();
             } else {
                 audioPlayer.pause();
-                playPauseBtn.innerHTML = '성경듣기';
             }
         };
+
+        audioPlayer.addEventListener('play', () => {
+            playPauseBtn.textContent = '일시정지';
+        });
+
+        audioPlayer.addEventListener('pause', () => {
+            playPauseBtn.textContent = '성경듣기';
+        });
+        
+        audioPlayer.addEventListener('ended', () => {
+            playPauseBtn.textContent = '성경듣기';
+        });
 
         playPauseBtn.addEventListener('click', togglePlayPause);
         
@@ -636,15 +639,6 @@
                 togglePlayPause();
             }
         });
-
-        audioPlayer.addEventListener('ended', () => {
-            playPauseBtn.innerHTML = '성경듣기';
-        });
-
-        // iOS에서 오디오를 미리 로드하기 위한 트릭
-        window.addEventListener('load', () => {
-            audioPlayer.load();
-        }, false);
     </script>
 </body>
 </html>
